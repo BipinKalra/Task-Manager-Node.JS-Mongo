@@ -1,6 +1,6 @@
 // Mongoose is an ODM just like an ORM in case of SQL databases
 const mongoose = require("mongoose")
-const validator = require("validator")
+// const validator = require("validator")
 
 mongoose.connect("mongodb://127.0.0.1:27017/task-manager-api", {
   useNewUrlParser: true,
@@ -8,56 +8,57 @@ mongoose.connect("mongodb://127.0.0.1:27017/task-manager-api", {
   useUnifiedTopology: true
 })
 
-const User = mongoose.model("User", {
-  name: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  email: {
-    type: String,
-    required: true,
-    trim: true,
-    lowercase: true,
-    validate(value) {
-      if (!validator.isEmail(value)) {
-        throw new Error("Email invalid!")
-      }
-    }
-  },
-  age: {
-    type: Number,
-    default: 0,
-    // validate() function can be used to define custom validators
-    validate(value) {
-      if (value < 0) {
-        throw new Error("Age must be a positive number!")
-      }
-    }
-  },
-  password: {
-    type: String,
-    minlength: 7,
-    trim: true,
-    validate(value) {
-      if (value.toLowerCase().includes("password")) {
-        throw new Error("Password must not contain the string 'password'!")
-      }
-    }
-  }
-})
+// OLDER CODE BEFORE RESTRUCTURING
+// const User = mongoose.model("User", {
+//   name: {
+//     type: String,
+//     required: true,
+//     trim: true
+//   },
+//   email: {
+//     type: String,
+//     required: true,
+//     trim: true,
+//     lowercase: true,
+//     validate(value) {
+//       if (!validator.isEmail(value)) {
+//         throw new Error("Email invalid!")
+//       }
+//     }
+//   },
+//   age: {
+//     type: Number,
+//     default: 0,
+//     // validate() function can be used to define custom validators
+//     validate(value) {
+//       if (value < 0) {
+//         throw new Error("Age must be a positive number!")
+//       }
+//     }
+//   },
+//   password: {
+//     type: String,
+//     minlength: 7,
+//     trim: true,
+//     validate(value) {
+//       if (value.toLowerCase().includes("password")) {
+//         throw new Error("Password must not contain the string 'password'!")
+//       }
+//     }
+//   }
+// })
 
-const Task = mongoose.model("Task", {
-  description: {
-    type: String,
-    required: true,
-    trim: true
-  },
-  completed: {
-    type: Boolean,
-    default: false
-  }
-})
+// const Task = mongoose.model("Task", {
+//   description: {
+//     type: String,
+//     required: true,
+//     trim: true
+//   },
+//   completed: {
+//     type: Boolean,
+//     default: false
+//   }
+// })
 
 // const me = new User({
 //   name: "Suresh",
@@ -72,16 +73,16 @@ const Task = mongoose.model("Task", {
 //   console.log(error)
 // })
 
-const task = new Task({
-  description: "This task is complete!",
-  completed: true
-  // completed: false
-  // completed: "Honey Singh"
-})
+// const task = new Task({
+//   description: "This task is complete!",
+//   completed: true
+//   // completed: false
+//   // completed: "Honey Singh"
+// })
 
-task.save().then((result) => {
-  console.log(result)
-}).catch((error) => {
-  console.log(error)
-})
+// task.save().then((result) => {
+//   console.log(result)
+// }).catch((error) => {
+//   console.log(error)
+// })
 
