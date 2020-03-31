@@ -1,6 +1,7 @@
 const mongoose = require("mongoose")
 const validator = require("validator")
 const bcrypt = require("bcrypt")
+const jwt = require("jsonwebtoken")
 
 const userSchema = mongoose.Schema({
   name: {
@@ -39,7 +40,13 @@ const userSchema = mongoose.Schema({
         throw new Error("Password must not contain the string 'password'!")
       }
     }
-  }
+  },
+  tokens: [{
+    token: {
+      type: String,
+      required: true
+    }
+  }]
 })
 
 // By registering it with userSchema.statics we get access to this wherever we have access to our user model
@@ -57,6 +64,18 @@ userSchema.statics.findByCredentials = async (email, password) => {
   }
 
   return user
+}
+
+// These methods are available on instances i.e. userSchema.methods
+userSchema.methods.generateAuthToken = async function () {
+  const user = this
+  const token = jwt.sign({ _id: user._id.toString() }, "iamlearningnodejs")
+
+  user.tokens = user.tokens.concat({ token })
+
+  await user.save()
+
+  return token
 }
 
 // middleware to run something before an operation occurs
