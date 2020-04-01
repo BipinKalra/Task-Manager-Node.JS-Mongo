@@ -7,6 +7,25 @@ const userRouter = require("./routers/user")
 const app = express()
 const port = process.env.PORT || 9000
 
+// This is a middleware function that would run in between a new recieved request and running of the route handler by express
+app.use((req, res, next) => {
+  if (req.method === "GET") {
+    res.send("GET requests are disabled!")
+  } else {
+    next()
+  }
+
+  // console.log(req.method, req.path)
+
+  // Calling next() is important or else the next thing in the chain which is the route handler wont ever run
+  // next()
+})
+
+// Middleware for maintainence mode
+app.use((req, res, next) => {
+  res.status(503).send("App is in maintainence mode!")
+})
+
 // This function call makes express automatically parse incoming json to an object
 app.use(express.json())
 
@@ -115,7 +134,7 @@ app.delete("/users/:id", async (req, res) => {
   try {
     const user = await User.findByIdAndDelete(req.params.id)
 
-    if(!user) {
+    if (!user) {
       return res.status(404).send()
     }
     res.send(user)
@@ -214,7 +233,7 @@ app.delete("/tasks/:id", async (req, res) => {
   try {
     const task = await Task.findByIdAndDelete(req.params.id)
 
-    if(!task) {
+    if (!task) {
       return res.status(404).send()
     }
     res.send(task)

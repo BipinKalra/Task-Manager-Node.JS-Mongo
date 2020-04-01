@@ -1,5 +1,6 @@
 const express = require("express")
 const User = require("../models/user")
+const auth = require("../middleware/authentication")
 
 const router = new express.Router()
 
@@ -26,7 +27,7 @@ router.post("/users/login", async (req, res) => {
   try {
     const user = await User.findByCredentials(req.body.email, req.body.password)
     const token = await user.generateAuthToken()
-    
+
     res.send({
       user,
       token
@@ -36,14 +37,20 @@ router.post("/users/login", async (req, res) => {
   }
 })
 
-// Endpoint to read all users
-router.get("/users", async (req, res) => {
-  try {
-    const users = await User.find({})
-    res.send(users)
-  } catch (error) {
-    res.status(500).send()
-  }
+// Endpoint to read all users - won't exist in the final app, would be changed to profile
+// Middleware is sent as the second argument to route handler
+// router.get("/users", auth, async (req, res) => {
+//   try {
+//     const users = await User.find({})
+//     res.send(users)
+//   } catch (error) {
+//     res.status(500).send()
+//   }
+// })
+
+// Endpoint to fetch the profile of an authenticated user
+router.get("/users/me", auth, async (req, res) => {
+  res.send(req.user)
 })
 
 // Endpoint to read a particular user
