@@ -59,7 +59,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
 
   const isMatch = await bcrypt.compare(password, user.password)
 
-  if(!isMatch) {
+  if (!isMatch) {
     throw new Error("Unable to login!")
   }
 
@@ -80,7 +80,7 @@ userSchema.methods.generateAuthToken = async function () {
 
 // To filter out the data to be shown while returning a user
 // userSchema.methods.getPublicProfile = function () {
-  userSchema.methods.toJSON = function () {
+userSchema.methods.toJSON = function () {
   // toJSON function gets called whenever an object is stringified
   // i.e. whenever an object is sent, toJSON is called internally by the routers before sending the JSON response
   const user = this

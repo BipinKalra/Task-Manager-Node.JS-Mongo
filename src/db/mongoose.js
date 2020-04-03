@@ -9,7 +9,8 @@ mongoose.connect("mongodb://127.0.0.1:27017/task-manager-api", {
   useFindAndModify: false
 })
 
-// OLDER CODE BEFORE RESTRUCTURING
+// DEPRECATED CODE FOR LEARNING
+
 // const User = mongoose.model("User", {
 //   name: {
 //     type: String,

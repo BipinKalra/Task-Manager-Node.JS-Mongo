@@ -2,6 +2,22 @@ require("../src/db/mongoose")
 const User = require("../src/models/user")
 const Task = require("../src/models/task")
 
+// Using async-await
+const deleteTaskandCount = async (id) => {
+  const task = await Task.findByIdAndDelete(id)
+  const count = await Task.countDocuments({ completed: true})
+
+  return count
+}
+
+deleteTaskandCount("5e820147e0f3237175ad1a81").then((result) => {
+  console.log(result)
+}).catch((error) => {
+  console.log(error)
+})
+
+// DEPRECATED CODE FOR LEARNING
+
 // User.findByIdAndUpdate("5e81ddc9ee3fdd534dd671f4", {
 //   age: 22
 // }).then((user) => {
@@ -41,17 +57,3 @@ const Task = require("../src/models/task")
 // }).catch((error) => {
 //   console.log(error)
 // })
-
-// Using async-await
-const deleteTaskandCount = async (id) => {
-  const task = await Task.findByIdAndDelete(id)
-  const count = await Task.countDocuments({ completed: true})
-
-  return count
-}
-
-deleteTaskandCount("5e820147e0f3237175ad1a81").then((result) => {
-  console.log(result)
-}).catch((error) => {
-  console.log(error)
-})
