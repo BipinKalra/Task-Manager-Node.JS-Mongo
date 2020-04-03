@@ -78,6 +78,20 @@ userSchema.methods.generateAuthToken = async function () {
   return token
 }
 
+// To filter out the data to be shown while returning a user
+// userSchema.methods.getPublicProfile = function () {
+  userSchema.methods.toJSON = function () {
+  // toJSON function gets called whenever an object is stringified
+  // i.e. whenever an object is sent, toJSON is called internally by the routers before sending the JSON response
+  const user = this
+  const userObject = user.toObject()
+
+  delete userObject.password
+  delete userObject.tokens
+
+  return userObject
+}
+
 // middleware to run something before an operation occurs
 // middleware method post would be used in case of an operation to be run after an event occurs
 userSchema.pre("save", async function (next) {
