@@ -49,6 +49,13 @@ const userSchema = mongoose.Schema({
   }]
 })
 
+// Virtual properties are not stored in the DB but just allow mongoose to realise the relationship between the data
+userSchema.virtual("tasks", {
+  ref: "Task",
+  localField: "_id", // Field in current model which is important for the relation to be setup
+  foreignField: "owner" // Field on the model being virtually related that connects to current model
+})
+
 // By registering it with userSchema.statics we get access to this wherever we have access to our user model
 userSchema.statics.findByCredentials = async (email, password) => {
   const user = await User.findOne({ email })

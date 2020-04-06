@@ -24,9 +24,6 @@ const auth = async (req, res, next) => {
       error: "Please authenticate!"
     })
   }
-
-  next()
-  // res.end()
 }
 
 module.exports = auth
