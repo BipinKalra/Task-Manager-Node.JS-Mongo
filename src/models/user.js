@@ -2,6 +2,7 @@ const mongoose = require("mongoose")
 const validator = require("validator")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const Task = require("./task")
 
 const userSchema = mongoose.Schema({
   name: {
@@ -47,6 +48,8 @@ const userSchema = mongoose.Schema({
       required: true
     }
   }]
+}, {
+  timestamps: true // This property adds the createdAt and updatedAt properties to our model
 })
 
 // Virtual properties are not stored in the DB but just allow mongoose to realise the relationship between the data
@@ -112,6 +115,16 @@ userSchema.pre("save", async function (next) {
   }
 
   // Next is called for the function to know when to end in this case
+  next()
+})
+
+// Middleware that deletes the tasks related to a user when a user gets deleted
+userSchema.pre("remove", async function (next) {
+  const user = this
+  await Task.deleteMany({
+    owner: user._id
+  })
+  
   next()
 })
 

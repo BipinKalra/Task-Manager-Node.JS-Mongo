@@ -22,18 +22,34 @@ router.post("/tasks", auth, async (req, res) => {
 })
 
 //Endpoint to read tasks
+// GET /tasks?completed=true + limit, skip for pagination
 router.get("/tasks", auth, async (req, res) => {
-  try {
-    const tasks = await Task.find({
-      owner: req.user._id
-    })
+  const match = {}
 
-    res.send(tasks)
+  if (req.query.completed) {
+    match.completed = req.query.completed === "true"
+  }
+
+  try {
+    // await req.user.populate("tasks").execPopulate()
+
+    // Populating using a match criteria
+    await req.user.populate({
+      path: "tasks",
+      match,
+      options: {
+        limit: parseInt(req.query.limit),
+        skip: parseInt(req.query.skip)
+      }
+    }).execPopulate()
+    res.send(req.user.tasks)
 
     // Alternative method
-    // await req.user.populate("tasks").execPopulate()
-    // res.send(req.user.tasks)
+    // const tasks = await Task.find({
+    //   owner: req.user._id
+    // })
 
+    // res.send(tasks)
   } catch (error) {
     res.status(500).send()
   }
