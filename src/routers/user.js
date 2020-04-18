@@ -12,8 +12,8 @@ const upload = multer({
   limits: {
     fileSize: 2000000
   },
-  fileFilter (req, file, cb) {
-    if(!file.originalname.match(/\.(jpeg|jpg|png)$/)) {
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(jpeg|jpg|png)$/)) {
       return cb(new Error("Please upload a valid image! (jpg, jpeg, png)"))
     }
 
@@ -121,20 +121,6 @@ router.patch("/users/me", auth, async (req, res) => {
   }
 })
 
-//Endpoint for adding user avatar
-router.post("/users/me/avatar", auth, upload.single("avatar"), async (req, res) => {
-  // Contains buffer of binary data of file returned by multer
-  req.user.avatar = req.file.buffer
-  await req.user.save()
-  res.send({
-    success: "User avatar updated!"
-  })
-}, (error, req, res, next) => {
-  res.status(400).send({
-    error: error.message
-  })
-})
-
 // Endpoint for deleting user
 // router.delete("/users/:id", auth, async (req, res) => {
 // User should only be allowed to delete its own profile
@@ -149,6 +135,48 @@ router.delete("/users/me", auth, async (req, res) => {
 
     await req.user.remove()
     res.send(req.user)
+  } catch (error) {
+    res.status(500).send()
+  }
+})
+
+// Endpoint for adding user avatar
+router.post("/users/me/avatar", auth, upload.single("avatar"), async (req, res) => {
+  // Contains buffer of binary data of file returned by multer
+  req.user.avatar = req.file.buffer
+  await req.user.save()
+  res.send({
+    success: "User avatar updated!"
+  })
+}, (error, req, res, next) => { // This callback is setup to handle errors thrown by multer
+  res.status(400).send({
+    error: error.message
+  })
+})
+
+// Endpoint to fetch user avatar
+router.get("/users/:id/avatar", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id)
+
+    if(!user || !user.avatar) {
+      throw new Error()
+    }
+
+    // This is used to set response headers
+    res.set("Cotent-Type", "image/jpg")
+    res.send(user.avatar)
+  } catch (error) {
+    res.status(404).send()
+  }
+})
+
+// End to delete user avatar
+router.delete("/users/me/avatar", auth, async (req, res) => {
+  try {
+    req.user.avatar = undefined
+    await req.user.save()
+    res.send()
   } catch (error) {
     res.status(500).send()
   }
