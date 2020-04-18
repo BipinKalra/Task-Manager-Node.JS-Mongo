@@ -1,5 +1,6 @@
 const express = require("express")
 const multer = require("multer")
+const sharp = require("sharp")
 const User = require("../models/user")
 const auth = require("../middleware/authentication")
 
@@ -143,7 +144,16 @@ router.delete("/users/me", auth, async (req, res) => {
 // Endpoint for adding user avatar
 router.post("/users/me/avatar", auth, upload.single("avatar"), async (req, res) => {
   // Contains buffer of binary data of file returned by multer
-  req.user.avatar = req.file.buffer
+  // req.user.avatar = req.file.buffer
+
+  // Here multiple function calls are chained
+  const buffer = await sharp(req.file.buffer).resize({
+    width: 250,
+    height: 250
+  }).png().toBuffer()
+
+  req.user.avatar = buffer
+
   await req.user.save()
   res.send({
     success: "User avatar updated!"
@@ -164,7 +174,7 @@ router.get("/users/:id/avatar", async (req, res) => {
     }
 
     // This is used to set response headers
-    res.set("Cotent-Type", "image/jpg")
+    res.set("Cotent-Type", "image/png")
     res.send(user.avatar)
   } catch (error) {
     res.status(404).send()
