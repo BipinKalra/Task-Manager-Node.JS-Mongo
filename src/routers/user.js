@@ -6,7 +6,19 @@ const auth = require("../middleware/authentication")
 const router = new express.Router()
 
 const upload = multer({
-  dest: "avatars"
+  // dest: "avatars",
+  // By removing the dest property, multer gets configured to return the data from the middleware function call
+  // instead of saving it to a directory in the file system
+  limits: {
+    fileSize: 2000000
+  },
+  fileFilter (req, file, cb) {
+    if(!file.originalname.match(/\.(jpeg|jpg|png)$/)) {
+      return cb(new Error("Please upload a valid image! (jpg, jpeg, png)"))
+    }
+
+    cb(undefined, true)
+  }
 })
 
 // Endpoint to create a user
@@ -110,8 +122,17 @@ router.patch("/users/me", auth, async (req, res) => {
 })
 
 //Endpoint for adding user avatar
-router.post("/users/me/avatar", upload.single("avatar"), async (req, res) => {
-  res.send()
+router.post("/users/me/avatar", auth, upload.single("avatar"), async (req, res) => {
+  // Contains buffer of binary data of file returned by multer
+  req.user.avatar = req.file.buffer
+  await req.user.save()
+  res.send({
+    success: "User avatar updated!"
+  })
+}, (error, req, res, next) => {
+  res.status(400).send({
+    error: error.message
+  })
 })
 
 // Endpoint for deleting user

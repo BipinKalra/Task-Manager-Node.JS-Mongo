@@ -47,7 +47,10 @@ const userSchema = mongoose.Schema({
       type: String,
       required: true
     }
-  }]
+  }],
+  avatar: {
+    type: Buffer
+  }
 }, {
   timestamps: true // This property adds the createdAt and updatedAt properties to our model
 })
