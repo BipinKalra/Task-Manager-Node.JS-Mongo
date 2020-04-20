@@ -82,7 +82,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
 // These methods are available on instances i.e. userSchema.methods
 userSchema.methods.generateAuthToken = async function () {
   const user = this
-  const token = jwt.sign({ _id: user._id.toString() }, "iamlearningnodejs")
+  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET)
 
   user.tokens = user.tokens.concat({ token })
 

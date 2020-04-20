@@ -5,6 +5,7 @@ const Task = require('./models/task')
 const userRouter = require("./routers/user")
 
 const app = express()
+// Port provided using process.env.PORT on heroku and 9000 is hardcoded for local environment
 const port = process.env.PORT || 9000
 
 // This is a middleware function that would run in between a new recieved request and running of the route handler by express
