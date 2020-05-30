@@ -3,7 +3,6 @@ const app = require("../src/app")
 const User = require("../src/models/user")
 const { userOneId, userOne, setupDatabase } = require("./fixtures/db")
 
-
 // beforeEach and afterEach are globals provided by jest and they take in functions to run
 // before/after each test case is executed
 beforeEach(setupDatabase)
@@ -124,3 +123,10 @@ test("Should not update invalid user profile fields!", async () => {
     })
     .expect(400)
 })
+
+// SOME EXTRA TESTING IDEAS
+
+// Should not signup user with invalid name/email/password
+// Should not update user if unauthenticated
+// Should not update user with invalid name/email/password
+// Should not delete user if unauthenticated
