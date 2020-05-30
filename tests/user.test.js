@@ -1,27 +1,12 @@
 const request = require("supertest")
 const app = require("../src/app")
-const jwt = require("jsonwebtoken")
-const mongoose = require("mongoose")
 const User = require("../src/models/user")
+const { userOneId, userOne, setupDatabase } = require("./fixtures/db")
 
-const userOneId = mongoose.Types.ObjectId()
-
-const userOne = {
-  _id: userOneId,
-  name: "Random User",
-  email: "randomuser@gmail.com",
-  password: "random123!",
-  tokens: [{
-    token: jwt.sign({ _id: userOneId }, process.env.JWT_SECRET)
-  }]
-}
 
 // beforeEach and afterEach are globals provided by jest and they take in functions to run
 // before/after each test case is executed
-beforeEach(async () => {
-  await User.deleteMany()
-  await new User(userOne).save()
-})
+beforeEach(setupDatabase)
 
 test("Should signup a new user!", async () => {
   const response = await request(app).post("/users").send({
