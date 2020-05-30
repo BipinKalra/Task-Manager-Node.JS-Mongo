@@ -45,6 +45,8 @@ test("Should add two numbers (async/await)!", async () => {
   expect(sum).toBe(25)
 })
 
+// DEPRECATED CODE FOR LEARNING
+
 // done argument is called after everything is completed
 // Thus unless and until done is called, jest wont make an assertion
 // test("Async test demo!", (done) => {

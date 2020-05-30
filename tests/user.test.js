@@ -34,7 +34,7 @@ test("Should signup a new user!", async () => {
 
   // Assert that the database was changed correctly
   const user = await User.findById(response.body.user._id)
-  expect().not.toBeNull()
+  expect(user).not.toBeNull()
 
   // Assertions about object
   expect(response.body).toMatchObject({
@@ -50,10 +50,13 @@ test("Should signup a new user!", async () => {
 })
 
 test("Should login existing user!", async () => {
-  await request(app).post("/users/login").send({
+  const response = await request(app).post("/users/login").send({
     email: userOne.email,
     password: userOne.password
   }).expect(200)
+
+  const user = await User.findById(userOneId)
+  expect(response.body.token).toBe(user.tokens[1].token)
 })
 
 test("Should reject nonexistent user!", async () => {
@@ -84,6 +87,9 @@ test("Should delete user profile!", async () => {
     .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
     .send()
     .expect(200)
+
+  const user = await User.findById(userOneId)
+  expect(user).toBeNull()
 })
 
 test("Should not delete user profile since unauthenticated!", async () => {
@@ -91,4 +97,45 @@ test("Should not delete user profile since unauthenticated!", async () => {
     .delete("/users/me")
     .send()
     .expect(401)
+})
+
+test("Should upload avatar image!", async () => {
+  await request(app)
+    .post("/users/me/avatar")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .attach("avatar", "tests/fixtures/profile-pic.jpg")
+    .expect(200)
+
+  const user = await User.findById(userOneId)
+
+  // The assertion below would fail as toBe uses triple equality which makes both the objects different
+  // expect({}).toBe({})
+  // The assertion below would pass though as toEqual checks for individual properties and compares them
+  // expect({}).toEqual({})
+
+  // This checks for the data to be of the type Buffer
+  expect(user.avatar).toEqual(expect.any(Buffer))
+})
+
+test("Should update valid user profile field!", async () => {
+  await request(app)
+    .patch("/users/me")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .send({
+      name: "Bipin Kalra"
+    })
+    .expect(200)
+
+  const user = await User.findById(userOneId)
+  expect(user.name).toEqual("Bipin Kalra")
+})
+
+test("Should not update invalid user profile fields!", async () => {
+  await request(app)
+    .patch("/users/me")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .send({
+      location: "Delhi"
+    })
+    .expect(400)
 })
